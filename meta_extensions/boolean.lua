@@ -13,3 +13,5 @@ meta.__pow = function(lhs, rhs)
 end
 
 meta.__unm = function(subject) return not subject end
+
+debug.setmetatable(true, meta)
