@@ -1,3 +1,5 @@
+local setmetatable = setmetatable
+
 local anonClassCounter = 0
 
 local ids = {}
@@ -83,3 +85,5 @@ function class(name, metaTable, statics, superClass, namespace, isSingleton)
 	
 	return classTable
 end
+
+return class

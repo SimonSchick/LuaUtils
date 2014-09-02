@@ -10,9 +10,9 @@ local dgetlocal = debug.getlocal
 
 local dgetinfo = debug.getinfo
 
-module("util")
+local util = {}
 
-function fassert(cond, lvl, format, ...)
+function util.fassert(cond, lvl, format, ...)
 	if not cond then
 		if not format then
 			error("assertion failed!")
@@ -22,32 +22,32 @@ function fassert(cond, lvl, format, ...)
 	return cond
 end
 
-function assertArg(arg, t, ind)
+function util.assertArg(arg, t, ind)
 	local t2 = type(arg)
-	fassert(t == t2, 3, "bad argument #%i to '?' (%s expected, got %s)", ind, t, t2)
+	util.fassert(t == t2, 3, "bad argument #%i to '?' (%s expected, got %s)", ind, t, t2)
 end
 
-function assertArgLevel(arg, t, lvl, ind)
+function util.assertArgLevel(arg, t, lvl, ind)
 	local t2 = type(arg)
-	fassert(t == t2, lvl+1, "bad argument #%i to '?' (%s expected, got %s)", ind, t, t2)
+	util.fassert(t == t2, lvl+1, "bad argument #%i to '?' (%s expected, got %s)", ind, t, t2)
 end
 
-function assertMultiArgLevel(arg, lvl, ind, ...)
+function util.assertMultiArgLevel(arg, lvl, ind, ...)
 	local t2 = type(arg)
-	fassert(t == t2, lvl+1, "bad argument #%i to '?' (%s expected, got %s)", ind, tconcat({...}, " or "), t2)
+	util.fassert(t == t2, lvl+1, "bad argument #%i to '?' (%s expected, got %s)", ind, tconcat({...}, " or "), t2)
 end
 
-function ferror(str, level, ...)
+function util.ferror(str, level, ...)
 	error(sformat(str, ...), level+1)
 end
 
-function tableCopy(dest, src)
+function util.tableCopy(dest, src)
 	for k, v in next, src do
 		dest[k] = v
 	end
 end
 
-function tableCopyNoOverride(dest, src)
+function util.tableCopyNoOverride(dest, src)
 	for k, v in next, src do
 		if not curr[k] then
 			dest[k] = v
@@ -55,7 +55,7 @@ function tableCopyNoOverride(dest, src)
 	end
 end
 
-function tableCount(tbl)
+function util.tableCount(tbl)
 	local i = 0
 	for _ in next, tbl do
 		i = i + 1
@@ -63,13 +63,13 @@ function tableCount(tbl)
 	return i
 end
 
-function substractTable(curr, rem)
+function util.substractTable(curr, rem)
 	for k, v in next, rem do
 		curr[k] = nil
 	end
 end
 
-function removeKeyByValue(tbl, val)
+function util.removeKeyByValue(tbl, val)
 	for k, v in next, tbl do
 		if val == v then
 			tremove(tbl, k)
@@ -79,7 +79,7 @@ function removeKeyByValue(tbl, val)
 	return false
 end
 
-function testArguments(func)
+function util.testArguments(func)
 	local ret = {}
 	local info = debug.getinfo(func)
 	if info.isvararg then
@@ -98,3 +98,5 @@ function testArguments(func)
 	end
 	return ret
 end
+
+return util

@@ -13,7 +13,7 @@ local dofile = dofile
 
 local print = print
 
-module("mathe")
+module("math.extended")
 
 --dofile("utilfuncs.lua")
 
