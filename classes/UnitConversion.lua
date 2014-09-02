@@ -108,7 +108,7 @@ local data = {
 addMetricValues("bit", data, 0.125)
 addMetricValues("byte", data, 1)
 
-class("Unit", {
+return class("Unit", {
 }, {
 	convert = function(value, type, from, to)
 		return (value * Unit[type][from]) / Unit[type][to]

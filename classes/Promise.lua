@@ -1,7 +1,7 @@
 local unpack = table.unpack or unpack
 
-class("Promise", {
-	mt.isDone = function(self)
+return class("Promise", {
+	isDone = function(self)
 		return self.resolved or self.rejected
 	end,
 	new = function(self, resolver)
