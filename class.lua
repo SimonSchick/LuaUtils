@@ -7,7 +7,7 @@ local ids = {}
 local function generateUID()
 	local id
 	repeat 
-		id = math.random(0, 0xFFFFFFFF)
+		id = math.random(0, 0xFFFFFFF)
 	until not ids[id]
 	ids[id] = true
 	return string.format("%x08", id)
@@ -17,7 +17,7 @@ function instanceof(instance, class)
 	return instance[class.uid] ~= nil
 end
 	
-function class(name, metaTable, statics, superClass, namespace, isSingleton)
+function class(name, metaTable, statics, superClass, isSingleton)
 	if not name then
 		name = string.format("AnonymousClass%08x", anonClassCounter)
 		anonClassCounter = anonClassCounter + 1
@@ -78,10 +78,6 @@ function class(name, metaTable, statics, superClass, namespace, isSingleton)
 			metaTable[k] = v
 		end
 	end
-
-	namespace = namespace or _G
-	namespace[name] = classTable
-
 	
 	return classTable
 end
