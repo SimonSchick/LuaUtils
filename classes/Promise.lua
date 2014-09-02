@@ -48,7 +48,7 @@ class("Promise", {
 			end
 		end
 	end,
-	_then = function(self, resolve, reject)
+	next = function(self, resolve, reject)
 		return Promise(function(resolveInternal, rejectInternal)
 			if self.resolved and resolve then
 				resolveInternal(resolve(unpack(self.resolveData)))
@@ -66,7 +66,7 @@ class("Promise", {
 			})
 		end)
 	end,
-	catch = function(self, callback)
+	error = function(self, callback)
 		return Promise(function(resolveInternal, rejectInternal)
 			if self.resolved then
 				resolveInternal(unpack(self.resolveData))--original value ?
