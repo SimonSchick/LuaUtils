@@ -7,40 +7,22 @@ local msqrt = math.sqrt
 
 local tsort = table.sort
 local tinsert = table.insert
-local getfenv = getfenv
-
-local dofile = dofile
-
-local print = print
-
-module("math.extended")
-
---dofile("utilfuncs.lua")
 
 euler = 2.718281828459045
 
-local env = getfenv()
-
-for i = 1, 10 do
-	env["sqrt"..i] = msqrt(i)
-end
-
-function isIntegral(v)
+local function isIntegral(v)
 	return v%1 == 0
 end
 
-function getFraction(v)
+local function getFraction(v)
 	return v%1
 end
 
-function root(v, base)
+local function root(v, base)
 	return v^ - base
 end
 
---start = 0
---stop = 1
---step = 0.01
-function eval(f, start, stop, step)
+local function eval(f, start, stop, step)
 	local res = {}
 	local idx = 1
 	for v = start or 0, stop or 1, step or 0.01 do
@@ -50,13 +32,10 @@ function eval(f, start, stop, step)
 	return res
 end
 
---s must be of type number or table
---e must be either a number or a function
-
-function sum(s, e, f)
+local function sum(s, e, f)
 	local res = 0
-	if(type(s) == "table") then
-		if(type(e) == "function") then
+	if type(s) == "table" then
+		if type(e) == "function" then
 			for i = 1, #s do
 				res = res + e(i, s[i]) 
 			end
@@ -74,12 +53,10 @@ function sum(s, e, f)
 	return res
 end
 
---s must be of type number or table
---e must be either a number or a function
-function product(s, e, f) 
+local function product(s, e, f) 
 	local res = 0
-	if(type(s) == "table") then
-		if(type(e) == "function") then
+	if type(s) == "table" then
+		if type(e) == "function" then
 			for i = 1, #s do
 				res = res * e(i, s[i]) 
 			end
@@ -97,16 +74,16 @@ function product(s, e, f)
 	return res
 end
 
-function logb(val, base)
+local function logb(val, base)
 	base = base or e
 	return mlog(val) / mlog(base)
 end
 
-function ld(val)
+local function ld(val)
 	return mlog(val) / mlog(2)
 end
 
-function faculty(n)
+local function faculty(n)
 	local res = 1
 	for i = 2, n do
 		res = res * i
@@ -115,41 +92,41 @@ function faculty(n)
 end
 local faculty = faculty
 
-function binomial(n, k)
+local function binomial(n, k)
 	return faculty(n) / (faculty(k) * faculty(n - k))
 end
 
-function binomial2(n, k)
+local function binomial2(n, k)
 	return (n ^ k) / faculty(k)
 end
 
-function binomial3(n, k)
+local function binomial3(n, k)
 	if k > n/2 then k = n - k end 
  
 	local numer, denom = 1, 1
 	for i = 1, k do
-		numer = numer * ( n - i + 1 )
+		numer = numer * (n - i + 1)
 		denom = denom * i
 	end
 	return numer / denom
 end
 
-function round(val, decimals)
+local function round(val, decimals)
     local mult = 10 ^ (decimals or 0)
     return mfloor(val * mult + 0.5) / mult
 end
 
-function random(min, max)
+local function random(min, max)
 	return min + (max - min) * random()
 end
 
-function lerp(from, to, delta)
-	if (delta > 1) then return to end
-	if (delta < 0) then return from end
+local function lerp(from, to, delta)
+	if delta > 1 then return to end
+	if delta < 0 then return from end
 	return from + (to - from) * delta
 end
 
-function approach(from, to, delta)
+local function approach(from, to, delta)
 	if from < to then
 		return mmin(from + delta, to)
 	elseif from > to then
@@ -158,53 +135,57 @@ function approach(from, to, delta)
 	return to
 end
 
-function map(val, min, max, newMin, newMax)
+local function map(val, min, max, newMin, newMax)
 	return (val - min) / (max - min) * (newMax - newMin) + newMin
 end
 
-function translate(curr, from, to)
+local function translate(curr, from, to)
 	return (curr - from) / (to - from)
 end
 
-function clamp(val, min, max)
-    if (val < min) then return low end
-    if (val > max) then return high end
+local function clamp(val, min, max)
+    if val < min then return low end
+    if val > max then return high end
     return val
 end
 
-function ease(fProgress, fEaseIn, fEaseOut) 
+local function ease(progress, easeIn, easeOut) 
 
-	if (fEaseIn == nil) then fEaseIn = 0 end
-	if (fEaseOut == nil) then fEaseOut = 1 end
+	easeIn = easeIn or 0
+	easeOut = easeOut or 1
 
-	local fSumEase = fEaseIn + fEaseOut; 
+	local sumEase = easeIn + easeOut
 
-	if( fProgress == 0.0 or fProgress == 1.0 ) then return fProgress end
-
-	if( fSumEase == 0.0 ) then return fProgress end
-	if( fSumEase > 1.0 ) then
-		fEaseIn = fEaseIn / fSumEase; 
-		fEaseOut = fEaseOut / fSumEase; 
+	if progress == 0 or progress == 1 then
+		return progress
 	end
 
-	local fProgressCalc = 1.0 / (2.0 - fEaseIn - fEaseOut); 
+	if sumEase == 0 then
+		return progress
+	end
+	if sumEase > 1.0 then
+		easeIn = easeIn / sumEase
+		easeOut = easeOut / sumEase
+	end
 
-	if( fProgress < fEaseIn ) then
-		return ((fProgressCalc / fEaseIn) * fProgress * fProgress); 
-	elseif( fProgress < 1.0 - fEaseOut ) then
-		return (fProgressCalc * (2.0 * fProgress - fEaseIn)); 
+	local progressCalc = 1.0 / (2.0 - easeIn - easeOut)
+
+	if progress < easeIn then
+		return ((progressCalc / easeIn) * progress ^ 2)
+	elseif progress < 1 - easeOut then
+		return (progressCalc * (2.0 * progress - easeIn))
 	else 
-		fProgress = 1.0 - fProgress; 
-		return (1.0 - (fProgressCalc / fEaseOut) * fProgress * fProgress); 
+		progress = 1 - progress
+		return (1 - (progressCalc / easeOut) * progress ^ 2)
 	end
 end
 
-function median(tbl)
+local function median(tbl)
 	tsort(tbl)
 	return tbl[#tbl / 2];
 end
 
-function medianB(a, s, e)
+local function medianB(a, s, e)
 	local new={}
 
 	for i = s, e do
@@ -215,10 +196,48 @@ function medianB(a, s, e)
 	return new[mceil(#new / 2)]
 end
 
-function tableOperation(tbl, func, ...)
+local function tableOperation(tbl, func, ...)
 	local ret = {}
 	for i = 1, #tbl do
 		ret[i] = func(tbl[i], ...)
 	end
 	return ret
 end
+
+local function sign(a)
+	if a > 0 then
+		return 1
+	end
+	if a == 0 then
+		return 0
+	end
+	return -1
+end
+
+return {
+	euler = euler,
+	isIntegral = isIntegral,
+	getFraction = getFraction,
+	root = root,
+	eval = eval,
+	sum = sum,
+	product = product,
+	logb = logb,
+	ld = ld,
+	faculty = faculty,
+	binomial = binomial,
+	binomial2 = binomial2,
+	binomial3 = binomial3,
+	round = round,
+	random = random,
+	lerp = lerp,
+	approach = approach,
+	map = map,
+	translate = translate,
+	clamp = clamp,
+	ease = ease,
+	median = median,
+	medianB = medianB,
+	tableOperation = tableOperation,
+	sign = sign
+}
