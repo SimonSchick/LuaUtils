@@ -1,6 +1,7 @@
 local unpack = table.unpack or unpack
 
-return class("Promise", {
+local Promise
+Promise = class("Promise", {
 	isDone = function(self)
 		return self.resolved or self.rejected
 	end,
@@ -125,3 +126,5 @@ return class("Promise", {
 		end)		
 	end
 })
+
+return Promise
