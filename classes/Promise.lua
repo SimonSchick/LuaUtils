@@ -1,4 +1,7 @@
 local unpack = table.unpack or unpack
+local pcall = pcall
+local type = type
+local tableinsert = table.insert
 
 local Promise
 Promise = class("Promise", {
@@ -57,7 +60,7 @@ Promise = class("Promise", {
 				rejectInternal(reject(unpack(self.resolveData)))
 			end
 			
-			table.insert(self.thens, {
+			tableinsert(self.thens, {
 				resolved = function()
 					resolveInternal(resolve())
 				end,
@@ -74,7 +77,7 @@ Promise = class("Promise", {
 			elseif self.rejected then
 				rejectInternal(callback(unpack(self.resolveData)))
 			end
-			table.insert(self.thens, {
+			tableinsert(self.thens, {
 				resolved = function()
 					resolveInternal(unpack(self.resolveData))--original value ?
 				end,
