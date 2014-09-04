@@ -70,7 +70,9 @@ function class(name, metaTable, statics, superClass, isSingleton)
 	local internalClassMetaTable = {
 		__call = function(classTbl, ...)
 			local new = setmetatable({}, metaTable)
-			constructor(new, ...)
+			if constructor then
+				constructor(new, ...)
+			end
 			return new
 		end
 	}
