@@ -86,9 +86,9 @@ Promise = class("Promise", {
 	end
 }, {
 	resolve = function(object)
-		if type(object) == "table" and object._then then
+		if type(object) == "table" and object.next then
 			return Promise(function(resolve, reject)
-				object:_then(resolve, reject)
+				object:next(resolve, reject)
 			end)
 		end
 		return Promise(function(resolve, reject) resolve(object) end)
@@ -99,7 +99,7 @@ Promise = class("Promise", {
 	any = function(promises)
 		return Promise(function(resolve, reject)
 			for index, promise in next, promises do
-				promise:_then(function(result)
+				promise:next(function(result)
 					resolve(result)
 				end, function(result)
 					reject(result)
@@ -113,7 +113,7 @@ Promise = class("Promise", {
 			local has = 0
 			local ret = {}
 			for index, promise in next, promises do
-				promise:_then(function(result)
+				promise:next(function(result)
 					has = has + 1
 					ret[has] = result
 					if has == needed then
