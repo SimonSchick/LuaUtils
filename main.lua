@@ -24,10 +24,13 @@ function importMeta:__index(index)
 	
 	searchPath = searchPath .. (searchPath ~= includePath and "\\" or "") .. index
 	searchSegments = searchSegments .. (searchSegments ~= "" and "." or "") .. index
+	print(searchSegments, searchPath)
 	if loadfile(searchPath .. ".lua") then
-		searchPath = includePath
+		local tempSearchSegments = searchSegments
+		
 		searchSegments = ""
-		return require(searchSegments)
+		searchPath = includePath
+		return require(tempSearchSegments)
 	end
 	return self
 end
