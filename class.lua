@@ -36,6 +36,14 @@ function classMetaTable:hasSuper()
 	return not not self.super
 end
 
+function classMetaTable:getUID()
+	return self.uid
+end
+
+function classMetaTable:isAnonymous()
+	return self.name:match("AnonymousClass%x+")
+end
+
 local singletonClassMeta = setmetatable({}, classMetaTable)
 singletonClassMeta.__index = singletonClassMeta
 
@@ -80,6 +88,7 @@ function class(name, metaTable, statics, superClass, isSingleton)
 			classTable[k] = v
 		end
 	end
+	
 	if superClass then
 		classTable.super = superClass
 		setmetatable(metaTable, superClass.metaTable)
