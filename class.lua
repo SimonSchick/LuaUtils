@@ -16,6 +16,35 @@ end
 function instanceof(instance, class)
 	return instance[class.uid] ~= nil
 end
+
+local classMetaTable = {}
+classMetaTable.__index = classMetaTable
+
+function classMetaTable:getName()
+	return self.name
+end
+
+function classMetaTable:getMethods()
+	return self.metaTable
+end
+
+function classMetaTable:getSuper()
+	return self.super
+end
+
+function classMetaTable:hasSuper()
+	return not not self.super
+end
+
+local singletonClassMeta = setmetatable({}, classMetaTable)
+singletonClassMeta.__index = singletonClassMeta
+
+function singletonClassMeta:getInstance()
+	if not self.instance then
+		self.instance = self()
+	end
+	return self.instance
+end
 	
 function class(name, metaTable, statics, superClass, isSingleton)
 	if not name then
@@ -30,34 +59,21 @@ function class(name, metaTable, statics, superClass, isSingleton)
 	metaTable.__index = metaTable
 	metaTable[uid] = true
 	
-	local classTable = setmetatable({}, {
+	local internalClassMetaTable = {
 		__call = function(classTbl, ...)
 			local new = setmetatable({}, metaTable)
 			constructor(new, ...)
 			return new
 		end
-	})
+	}
+	
+	internalClassMetaTable.__index = internalClassMetaTable
+	
+	local classTable = setmetatable({}, setmetatable(internalClassMetaTable, isSingleton and singletonClassMeta or classMetaTable))
 	
 	classTable.metaTable = metaTable
-	
 	classTable.uid = uid
-	
-	classTable.getName = function()
-		return name
-	end
-	
-	classTable.getMethods = function()
-		return metaTable
-	end
-	
-	if isSingleton then
-		function classTable:getInstance()
-			if not self.instance then
-				self.instance = classTable()
-			end
-			return self.instance
-		end
-	end
+	classTable.name = name
 	
 	if statics then
 		for k, v in next, statics do
