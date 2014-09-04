@@ -24,7 +24,6 @@ function importMeta:__index(index)
 	
 	searchPath = searchPath .. (searchPath ~= includePath and "\\" or "") .. index
 	searchSegments = searchSegments .. (searchSegments ~= "" and "." or "") .. index
-	print(searchSegments, searchPath)
 	if loadfile(searchPath .. ".lua") then
 		local tempSearchSegments = searchSegments
 		
