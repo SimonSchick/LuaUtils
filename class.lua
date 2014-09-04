@@ -64,7 +64,7 @@ function class(name, metaTable, statics, superClass, isSingleton)
 	
 	local constructor = metaTable.new
  
-	metaTable.__index = metaTable
+	metaTable.__index = metaTable.__index or metaTable
 	metaTable[uid] = true
 	
 	local internalClassMetaTable = {
