@@ -2,8 +2,8 @@ local osDate = os.date
 
 return class("Date", {
 	new = function(self, time)
-		self.dateData = osDate("*t", time)
 		self.date = time or os.time()
+		self.dateData = osDate("*t", os.time)
 	end,
 	clone = function(self)
 		return Date(self.date)
