@@ -3,7 +3,7 @@ local osDate = os.date
 return class("Date", {
 	new = function(self, time)
 		self.date = time or os.time()
-		self.dateData = osDate("*t", os.time)
+		self.dateData = osDate("*t", self.date)
 	end,
 	clone = function(self)
 		return Date(self.date)
@@ -68,5 +68,8 @@ return class("Date", {
 	end,
 	getISO8601 = function(self)
 		return osDate("%Y-%m-%dT%XZ")
+	end,
+	__tostring = function(self)
+		return self:getGMT()
 	end
 })
