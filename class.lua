@@ -40,8 +40,12 @@ function classMetaTable:getUID()
 	return self.uid
 end
 
+function classMetaTable:__tostring()
+	return ("Class: %s"):format(self:getName())
+end
+
 function classMetaTable:isAnonymous()
-	return self.name:match("AnonymousClass%x+")
+	return not not self.name:match("AnonymousClass%x+")
 end
 
 local singletonClassMeta = setmetatable({}, classMetaTable)
@@ -74,7 +78,8 @@ function class(name, metaTable, statics, superClass, isSingleton)
 				constructor(new, ...)
 			end
 			return new
-		end
+		end,
+		__tostring = classMetaTable.__tostring
 	}
 	
 	internalClassMetaTable.__index = internalClassMetaTable
