@@ -11,25 +11,42 @@ end)
 
 class = require "class"
 
+local function canLoadFile(path)
+	return not not(loadfile(path))
+end
+
 local importMeta = {}
 
 local searchPath
 local searchSegments
+local lastLine
+local canLoad
+
+function importMeta:__unm()
+	if canLoad then
+		local temp = require(searchSegments)
+		searchSegments = ""
+		searchPath = includePath
+		canLoad = false
+		return temp
+	end
+	error("Invalid import")
+end
+
+function importMeta:__call()
+	return -self
+end
 
 function importMeta:__index(index)
 	if not searchPath then
 		searchPath = includePath
 		searchSegments = ""
 	end
-	
+
 	searchPath = searchPath .. (searchPath ~= includePath and "\\" or "") .. index
 	searchSegments = searchSegments .. (searchSegments ~= "" and "." or "") .. index
-	if loadfile(searchPath .. ".lua") then
-		local tempSearchSegments = searchSegments
-		
-		searchSegments = ""
-		searchPath = includePath
-		return require(tempSearchSegments)
+	if canLoadFile(searchPath .. ".lua") then
+		canLoad = true
 	end
 	return self
 end
