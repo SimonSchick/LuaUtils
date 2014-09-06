@@ -1,13 +1,13 @@
 local function copyValues(destination, source, keys)
-	for k in next, keys do
-		destination[k] = sourc€[k]
+	for k, v in next, keys do
+		destination[v] = source[v]
 	end
 end
 
 local meta = {}
 meta.__index = meta
 
-copyValue(meta, math, {
+copyValues(meta, math, {
 	"ceil",
 	"tan",
 	"log10",
