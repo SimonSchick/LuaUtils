@@ -17,35 +17,35 @@ Complex = class("Complex", {
 		end,
 		__add = function(self, rhs)
 			return Complex(
-				r = self.r + rhs.r,
-				i = self.i + rhs.i
+				self.r + rhs.r,
+				self.i + rhs.i
 			)
 		end,
 		__sub = function(self, rhs)
 			return Complex(
-				r = self.r - rhs.r,
-				i = self.i - rhs.i
+				self.r - rhs.r,
+				self.i - rhs.i
 			)
 		end,
 		__mul = function(self, rhs)
 			if type(rhs) == "number" then
 				return Complex(
-					r = self.r * rhs,
-					i = self.i * rhs
+					self.r * rhs,
+					self.i * rhs
 				)
 			elseif instanceof(rhs, Complex) then
 				return Complex(
-					r = self.r * rhs.r - self.i * rhs.i,
-					i = self.r * rhs.i + self.i * rhs.r
+					self.r * rhs.r - self.i * rhs.i,
+					self.r * rhs.i + self.i * rhs.r
 				)
 			end
 		end,
 		__div = function(self, rhs)
 			if type(rhs) == "number" then
-				return Complex{
-					r = self.r / rhs,
-					i = self.i / rhs
-				})
+				return Complex(
+					self.r / rhs,
+					self.i / rhs
+				)
 			elseif instanceof(rhs, Complex) then
 				local conjR = rhs.r
 				local conjI = -rhs.i
@@ -53,8 +53,8 @@ Complex = class("Complex", {
 				local lowerR = rhs.r * conjR - (rhs.i * conjI)
 				
 				return Complex(
-					r = (self.r * conjR - self.i * conjI) / lowerR,
-					i = (self.i * conjR + self.r * conjI) / lowerR
+					(self.r * conjR - self.i * conjI) / lowerR,
+					(self.i * conjR + self.r * conjI) / lowerR
 				)
 			end
 		end,
@@ -72,8 +72,8 @@ Complex = class("Complex", {
 				return self.r
 			end
 			return Complex(
-				r = msqrt(self.r + msqrt(self.r ^ 2+self.i ^ 2) / 2),
-				i = sign(self.i) * msqrt(-self.r + msqrt(self.r ^ 2+self.i ^ 2) / 2)
+				msqrt(self.r + msqrt(self.r ^ 2+self.i ^ 2) / 2),
+				sign(self.i) * msqrt(-self.r + msqrt(self.r ^ 2+self.i ^ 2) / 2)
 			)
 		end,
 		abs = function(self)
@@ -81,8 +81,8 @@ Complex = class("Complex", {
 		end,
 		conjugate = function(self)
 			return Complex(
-				r = self.r,
-				i = -self.i
+				self.r,
+				-self.i
 			)
 		end,
 		argument = function(self)
