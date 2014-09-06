@@ -24,10 +24,10 @@ ColorRGBA = class("ColorRGBA", {
 	end,
 	clone = function(self)
 		return ColorRGBA(
-			r = self.r,
-			g = self.g,
-			b = self.b,
-			a = self.a
+			self.r,
+			self.g,
+			self.b,
+			self.a
 		)
 	end,
 	__add = function(self, rhs)
