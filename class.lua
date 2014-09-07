@@ -57,6 +57,10 @@ function singletonClassMeta:getInstance()
 	end
 	return self.instance
 end
+
+local function defaultToString(self)
+	return ("%s"):format(self:getClass():getName())
+end
 	
 function class(name, metaTable, statics, superClass, isSingleton)
 	if not name then
@@ -69,6 +73,7 @@ function class(name, metaTable, statics, superClass, isSingleton)
 	local constructor = metaTable.new
  
 	metaTable.__index = metaTable.__index or metaTable
+	metaTable.__tostring = metaTable.__tostring or defaultToString
 	metaTable[uid] = true
 	
 	local internalClassMetaTable = {
