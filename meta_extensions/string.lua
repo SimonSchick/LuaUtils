@@ -100,5 +100,8 @@ function meta:matchAll(pattern)
 		table.insert(ret, matches)
 	end
 end
-	
+
+function meta:capitalize()
+	return self:sub(1, 1):upper() .. self:sub(2)
+end
 	
