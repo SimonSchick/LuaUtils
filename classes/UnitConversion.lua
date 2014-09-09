@@ -23,15 +23,25 @@ local metric = {
 	yotta = 10e24,
 }
 
-local function addMetricValues(postfix, targetTable, baseValue)
+local metricRanges = {
+	lower = 0,
+	upper = 1,
+	all = 2
+}
+
+local function addMetricValues(postfix, targetTable, baseValue, metricRange)
 	baseValue = baseValue or 1
 	targetTable[postfix] = baseValue
+	metricRange = metricRange or metricRanges.all
 	for metric, factor in next, metric do
-		targetTable[metric .. postfix] = baseValue * factor
+		if metricRange == metricRanges.lower and factor <= 1 or metricRange == metricRanges.upper and factor >= 1 or metricRange == metricRanges.all then
+			targetTable[metric .. postfix] = baseValue * factor
+		end
 	end
 end
 
 local distance = {
+	plank = 1.616199e-37,
 	angstrom = 1e-10,
 	astronimalunit = 149597870700,
 	barleycorn = 8.466666666666e-3,
@@ -92,12 +102,12 @@ local angle = {
 }
 
 local mass = {
-	ton = 1e6,
 	pound = 453.592,
 	ounce = 28.3495,
 	carat = 0.2
 }
 addMetricValues("gram", mass)
+addMetricValue("ton", mass, 1e6, metricRanges.upper)
 
 local data = {
 	nibble = 0.5,
@@ -105,20 +115,86 @@ local data = {
 	dword = 4,
 	qword = 8
 }
-addMetricValues("bit", data, 0.125)
-addMetricValues("byte", data, 1)
+addMetricValues("bit", data, 0.125, metricRanges.upper)
+addMetricValues("byte", data, 1, metricRanges.upper)
+
+local day = 60 ^ 2 * 24
+local year = day * 365
+
+local time = {
+	plankUnit = 5.39e-44,
+	jiffy = 3e-24,
+	svedberg = 1e-13,
+	shake = 1e-8,
+
+	minute = 60,
+	hour = 60 ^ 2,
+	day = day,
+	week = day * 7,
+	month = day * 30,--questionable
+	quarter = day * 30 * 3, 
+	season = day * 30 * 3, 
+	year = year,
+	leapYear = year + 2,
+	gregorian_year = year + 5 * 60 ^ 2 + 49 * 60 + 12,
+	biennium = year * 2,
+	triennium = year * 3,
+	lustrum	 = year * 5,
+	decade = year * 10,
+	jubilee = year * 50,
+	century = year * 100,
+	millennium = year * 1e3,
+	age = year * 1e6,
+	megaannum = year * 1e6,
+	epoch = year * 1e7,
+	era = year * 1e8,
+	eon = year * 5e8,
+	gigaannum = year * 1e9,
+}
+addMetricValues("second", data)
+
+local temperature = {
+	celsiusToFahrenheit = function(c)
+		return c * 9 / 5 + 32
+	end,
+	celsiusToKelvin = function(c)
+		return c + 273.15
+	end,
+	
+	fahrenheitToCelsius = function(f)
+		return (f - 32) * 5 / 9
+	end,
+	fahrenheitToKelvin = function(f)
+		return (f + 459.67) * 5 / 9
+	end,
+	
+	kelvinToCelsius = function(k)
+		return k - 273.15
+	end,
+	kelvinToFahrenheit = function(k)
+		return k * 9 / 5- 459.67
+	end
+}
 
 return class("Unit", {
 }, {
 	convert = function(value, type, from, to)
-		return (value * Unit[type][from]) / Unit[type][to]
+		if from == to then
+			return value
+		end
+		if Unit[type][from] and Unit[type][to] then
+			return (value * Unit[type][from]) / Unit[type][to]
+		end
+		return Unit[type][from .. "To" .. to:sub(1, 1) .. to:sub(2)](value)
 	end,
 	metric = metric,
 	distance = distance,
 	energy = energy,
 	angle = angle,
 	mass = mass,
-	data = data
+	data = data,
+	time = time,
+	temperature = temperature
 })
 
 
