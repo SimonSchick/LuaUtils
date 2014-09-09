@@ -214,6 +214,12 @@ local function sign(a)
 	return -1
 end
 
+local function truncate(val, idp)
+	local mult = 10^(idp or 0)
+	
+	return (val < 0 and math.ceil or math.floor)(val * mult) / mult
+end
+
 return {
 	euler = euler,
 	isIntegral = isIntegral,
@@ -239,5 +245,6 @@ return {
 	median = median,
 	medianB = medianB,
 	tableOperation = tableOperation,
-	sign = sign
+	sign = sign,
+	truncate = truncate
 }
