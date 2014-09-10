@@ -19,13 +19,20 @@ end
 
 local classMetaTable = {}
 classMetaTable.__index = classMetaTable
+classMetaTable.name = "INTERNAL CLASS META"
 
 function classMetaTable:getName()
 	return self.name
 end
 
 function classMetaTable:getMethods()
-	return self.metaTable
+	local ret = {}
+	for k, v in next, self.metaTable do
+		if not (k == "__index" or k == "__tostring" or k == "getClass" or k:match("%x%x%x%x%x%x%x%x")) then
+			ret[k] = v
+		end
+	end
+	return ret
 end
 
 function classMetaTable:getSuper()
@@ -71,6 +78,7 @@ end
 
 local singletonClassMeta = setmetatable({}, classMetaTable)
 singletonClassMeta.__index = singletonClassMeta
+singletonClassMeta.name = "INTERNAL SINGLETON CLASS META"
 
 function singletonClassMeta:getInstance()
 	if not self.instance then
