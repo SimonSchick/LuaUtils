@@ -41,44 +41,6 @@ function util.ferror(str, level, ...)
 	error(sformat(str, ...), level+1)
 end
 
-function util.tableCopy(dest, src)
-	for k, v in next, src do
-		dest[k] = v
-	end
-end
-
-function util.tableCopyNoOverride(dest, src)
-	for k, v in next, src do
-		if not curr[k] then
-			dest[k] = v
-		end
-	end
-end
-
-function util.tableCount(tbl)
-	local i = 0
-	for _ in next, tbl do
-		i = i + 1
-	end
-	return i
-end
-
-function util.substractTable(curr, rem)
-	for k, v in next, rem do
-		curr[k] = nil
-	end
-end
-
-function util.removeKeyByValue(tbl, val)
-	for k, v in next, tbl do
-		if val == v then
-			tremove(tbl, k)
-			return true
-		end
-	end
-	return false
-end
-
 function util.testArguments(func)
 	local ret = {}
 	local info = debug.getinfo(func)

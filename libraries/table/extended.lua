@@ -52,9 +52,12 @@ end
 local function filter(tbl, func, createNew)
 	--local target = createNew and {} or tbl
 	if isSequential(tbl) then
-		for i = 1, #tbl do
+		local i = 1
+		while i <= len do
 			if not func(i, tbl[i]) then
 				table.remove(tbl, i)
+			else
+				i = i + 1
 			end
 		end
 		return
@@ -195,6 +198,53 @@ local function unshift(tbl)
 	table.insert(tbl, 1)
 end
 
+local function removeKeysByValue(tbl, key)
+	if isSequential(tbl) then
+		local len = #tbl
+		local i = 1
+		while i <= len do
+			if tbl[i] == key then
+				table.remove(tbl, key)
+			else
+				i = i + 1
+			end
+		end
+		return
+	end
+	for k, v in next, tbl do
+		if k == key then
+			tbl[k] = nil
+		end
+	end
+end
+
+local function count(tbl)
+	local c = 0
+	for k, v in next, tbl do
+		c = c + 1
+	end
+	return c
+end
+
+local function copy(dest, source)
+	if not source then
+		source = dest
+		dest = {}
+	end
+	for k, v in next, source do
+		dest[k] = v
+	end
+	return dest
+end
+
+local function copyNoOverride(dest, source)
+	for k, v in next, source do
+		if not dest[k] then
+			dest[k] = v
+		end
+	end
+end
+
 return {
 	forEach = forEach,
 	test = test,
@@ -212,5 +262,9 @@ return {
 	shift = shift,
 	slice = slice,
 	any = any,
-	unshift = unshift
+	unshift = unshift,
+	removeKeysByValue = removeKeysByValue,
+	count = count,
+	copy = copy,
+	copyNoOverride = copyNoOverride
 }
