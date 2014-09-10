@@ -41,9 +41,10 @@ if osName == "WIN32" then
 	end
 	
 	table.foreach(findAllFiles(includePath, "lua"), function(k, file)
+		print("Checking", file)
 		local res, err = loadfile(file)
 		if not res then
-			local trimErr = err:gsub(includePath, "")
+			local trimErr = err:gsub(cleanIncludePath, "")
 			print(trimErr)
 		end
 	end)
