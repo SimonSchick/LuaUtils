@@ -1,0 +1,2 @@
+lua -l syntaxcheck
+pause
