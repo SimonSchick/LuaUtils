@@ -47,4 +47,7 @@ if osName == "WIN32" then
 			print(trimErr)
 		end
 	end)
+	print("Done")
 end
+
+os.exit(0)
