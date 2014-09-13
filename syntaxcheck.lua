@@ -51,6 +51,8 @@ if osName == "WIN32" then
 		local res, err = loadfile(file)
 		if not res then
 			print(err)
+			local line = tonumber(err:match(":(%d+):"))
+			os.execute(([[start "" "C:\Program Files (x86)\Notepad++\notepad++.exe" -n%i %s]]):format(line, file))
 		end
 	end)
 end
