@@ -1,15 +1,6 @@
 local FileSystem = require("classes.IO.FileSystem")
 
-local function runAndGetOutput(cmd)
-	local proc = io.popen(cmd)
-	local out = proc:read("*a")
-	proc:close()
-	return out
-end
-
-local function run(cmd)
-	io.popen(cmd):close()
-end
+local System = require("classes.System")
 
 local function dir(params)
 	local proc = io.popen("dir /B " .. params .. " 2>nul")
@@ -24,13 +15,13 @@ end
 local WinFileSystem
 WinFileSystem = class("WinFileSystem", {
 	exists = function(self, path)
-		return runAndGetOutput(("IF EXIST %q ( echo true ) else ( echo false )"):format(path)):find("true", 1, true) ~= nil
+		return System.run(("IF EXIST %q ( echo true ) else ( echo false )"):format(path)):find("true", 1, true) ~= nil
 	end,
 	create = function(self, path)
-		run(("copy NUL \"%s\""):format(path))
+		System.run(("copy NUL \"%s\""):format(path))
 	end,
 	createDirectory = function(self, path)
-		run(("mkdir \"%s\""):format(path))
+		System.run(("mkdir \"%s\""):format(path))
 	end,
 	getFiles = function(self, path)
 		return dir(("/A-H-D \"%s\""):format(path))
@@ -39,10 +30,10 @@ WinFileSystem = class("WinFileSystem", {
 		return dir(("/A-HD \"%s\""):format(path))
 	end,
 	deleteFile = function(self, path)
-		run(("DEL /Q /F \"%s\""):format(path))
+		System.run(("DEL /Q /F \"%s\""):format(path))
 	end,
 	deleteDirectory = function(self, path)
-		run(("RMDIR /S /Q \"%s\""):format(path))
+		System.run(("RMDIR /S /Q \"%s\""):format(path))
 	end
 }, nil, FileSystem)
 
