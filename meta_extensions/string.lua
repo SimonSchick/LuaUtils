@@ -104,4 +104,25 @@ end
 function meta:capitalize()
 	return self:sub(1, 1):upper() .. self:sub(2)
 end
+
+function meta:chars(startPos, endPos)
+	startPos = startPos and startPos - 1 or 0
+	endPos = endPos or #self
 	
+	local i = startPos
+	
+	return function()
+		if i > endPos then
+			return
+		end
+		return self:sub(i, i)
+	end
+end
+
+function meta:trimWhitespaces()
+	return self:gsub("^%s+(.-)%s+$", "%1")
+end
+
+function meta:isEmpty()
+	return self == ""
+end
