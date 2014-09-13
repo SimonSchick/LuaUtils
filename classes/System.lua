@@ -13,6 +13,9 @@ System =  class("System", {
 	end,
 	getenv = function(var)
 		return os.getenv(var)
-	end
+	end,
+	exit = function(code)
+		os.exit(code)
+	end,
 })
 return System
