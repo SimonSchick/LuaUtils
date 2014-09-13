@@ -6,6 +6,12 @@ local includePath = debug.getinfo(1).source:gsub("^@", ""):gsub("\\syntaxcheck%.
 
 local osName = identifyOS()
 
+local tforeach = table.foreach or function(tbl, func)
+	for k, v in next, tbl do
+		func(k, v)
+	end
+end
+
 if osName == "WIN32" then
 
 	local function dir(params)
@@ -40,15 +46,13 @@ if osName == "WIN32" then
 		return ret
 	end
 	
-	table.foreach(findAllFiles(includePath, "lua"), function(k, file)
+	tforeach(findAllFiles(includePath, "lua"), function(k, file)
 		print("Checking", file)
 		local res, err = loadfile(file)
 		if not res then
-			local trimErr = err:gsub(cleanIncludePath, "")
-			print(trimErr)
+			print(err)
 		end
 	end)
-	print("Done")
 end
 
 os.exit(0)
