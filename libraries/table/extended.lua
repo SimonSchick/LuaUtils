@@ -245,6 +245,10 @@ local function copyNoOverride(dest, source)
 	end
 end
 
+local function isEmpty(tbl)
+	return not next(tbl)
+end
+
 return {
 	forEach = forEach,
 	test = test,
@@ -266,5 +270,6 @@ return {
 	removeKeysByValue = removeKeysByValue,
 	count = count,
 	copy = copy,
-	copyNoOverride = copyNoOverride
+	copyNoOverride = copyNoOverride,
+	isEmpty = isEmpty
 }
