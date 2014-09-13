@@ -7,7 +7,7 @@ File = class("File", {
 			self.name = fileName
 			return
 		end
-		local path, name = path:match("(.-)[/\\]([\w_%.]+)")
+		local path, name = path:match("(.-)[/\\]([%w_%.]+)")
 	end
 })
 
