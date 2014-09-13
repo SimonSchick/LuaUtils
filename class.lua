@@ -116,7 +116,8 @@ function abstractClass(name, metaTable, statics, superClass)
 	local classTable = setmetatable({
 		metaTable = metaTable,
 		uid = uid,
-		name = name
+		name = name,
+		new = constructor
 	}, setmetatable(internalClassMetaTable, classMetaTable))
 	
 	if statics then
@@ -164,7 +165,8 @@ function class(name, metaTable, statics, superClass, isSingleton, isAbstract)
 	local classTable = setmetatable({
 		metaTable = metaTable,
 		uid = uid,
-		name = name
+		name = name,
+		new = constructor
 	}, setmetatable(internalClassMetaTable, isSingleton and singletonClassMeta or classMetaTable))
 	
 	if statics then
