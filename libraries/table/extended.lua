@@ -49,7 +49,7 @@ local function isSequential(tbl)
 	return true
 end
 
-local function filter(tbl, func, createNew)
+local function filter(tbl, func, --[[createNew]])
 	--local target = createNew and {} or tbl
 	if isSequential(tbl) then
 		local i = 1
