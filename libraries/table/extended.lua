@@ -49,7 +49,8 @@ local function isSequential(tbl)
 	return true
 end
 
-local function filter(tbl, func--[[, createNew]])
+local function filter(tbl, func--[[
+, createNew]])
 	--local target = createNew and {} or tbl
 	if isSequential(tbl) then
 		local i = 1
@@ -249,6 +250,22 @@ local function isEmpty(tbl)
 	return not next(tbl)
 end
 
+local weakKeyMT = {__mode = "k"}
+local weakValueMT = {__mode = "v"}
+local weakKeyValueMT = {__mode = "kv"}
+
+local function weakKeyTable()
+	return setmetatable({}, weakKeyMT)
+end
+
+local function weakValueTable()
+	return setmetatable({}, weakValueMT)
+end
+
+local function weakKeyValueTable()
+	return setmetatable({}, weakKeyValueMT)
+end
+
 return {
 	forEach = forEach,
 	test = test,
@@ -271,5 +288,8 @@ return {
 	count = count,
 	copy = copy,
 	copyNoOverride = copyNoOverride,
-	isEmpty = isEmpty
+	isEmpty = isEmpty,
+	weakKeyTable = weakKeyTable,
+	weakValueTable = weakValueTable,
+	weakKeyValueTable = weakKeyValueTable
 }
