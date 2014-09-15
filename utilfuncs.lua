@@ -61,4 +61,17 @@ function util.testArguments(func)
 	return ret
 end
 
+function util.fetchLocals(levelOffset)
+	local level = levelOffset or 2
+	repeat
+		for localIdx = 1, 0x255 do
+			local k, v = debug.getlocal(level, localIdx)
+			if not k then
+				break
+			end
+		end
+		level = level + 1
+	until not debug.getinfo(level)
+end
+
 return util
