@@ -220,6 +220,10 @@ local function truncate(val, idp)
 	return (val < 0 and math.ceil or math.floor)(val * mult) / mult
 end
 
+local function isNaN(val)
+	return val ~= val
+end
+
 return {
 	euler = euler,
 	isIntegral = isIntegral,
@@ -246,5 +250,6 @@ return {
 	medianB = medianB,
 	tableOperation = tableOperation,
 	sign = sign,
-	truncate = truncate
+	truncate = truncate,
+	isNaN = isNaN
 }
