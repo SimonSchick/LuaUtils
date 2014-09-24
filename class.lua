@@ -13,7 +13,6 @@ local function injectSuperUpValue(class)
 				local name, value = debug.getupvalue(method, i)
 				if name == "super" then
 					debug.setupvalue(method, i, superMethods)
-					print("injected")
 					break
 				end
 			end
