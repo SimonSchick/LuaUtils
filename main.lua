@@ -1,54 +1,29 @@
-includePath = debug.getinfo(1).source:gsub("^@", ""):gsub("main%.lua$", "")
+do --simple compatibilty layer
+	bit = bit or bit32
+end
 
-table.insert(package.loaders, function(moduleName)
-	--TODO: allow relative includes
-	local succ, err = loadfile(includePath .. moduleName:gsub("%.", "\\") .. ".lua")
-	if not succ then
-		error(err, 2)
-	end
-	return succ
-end)
+local function getCurrentScriptFolder(level)
+	return debug.getinfo(level + 1, "S").source:gsub("^@", ""):gsub("[%w_%.]-%.lua", "")
+end
 
-class = require "class"
+includePath = getCurrentScriptFolder(1)
+
+local function injectRequireLoader()
+	package.path = package.path .. ";" .. includePath .. "?.lua"
+end
 
 local function canLoadFile(path)
 	return not not(loadfile(path))
 end
 
-local importMeta = {}
-
-local searchPath
-local searchSegments
-local lastLine
-local canLoad
-
-function importMeta:__unm()
-	if canLoad then
-		local temp = require(searchSegments)
-		searchSegments = ""
-		searchPath = includePath
-		canLoad = false
-		return temp
+function loadClass(class)
+	local folderPath = getCurrentScriptFolder(2)
+	local path = folderPath .. class:gsub("%.", "\\") .. ".lua"
+	if canLoadFile(path) then
+		local s, e = folderPath:find(includePath, 1, true)
+		return require("classes." .. folderPath:sub(e+1):gsub("classes\\", ""):gsub("\\", ".") .. class)
 	end
-	error("Invalid import")
+	return require(class)
 end
 
-function importMeta:__call()
-	return -self
-end
-
-function importMeta:__index(index)
-	if not searchPath then
-		searchPath = includePath
-		searchSegments = ""
-	end
-
-	searchPath = searchPath .. (searchPath ~= includePath and "\\" or "") .. index
-	searchSegments = searchSegments .. (searchSegments ~= "" and "." or "") .. index
-	if canLoadFile(searchPath .. ".lua") then
-		canLoad = true
-	end
-	return self
-end
-	
-import = setmetatable({}, importMeta)
+class = require "class"
