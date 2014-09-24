@@ -23,7 +23,7 @@ function loadClass(class)
 		local s, e = folderPath:find(includePath, 1, true)
 		return require("classes." .. folderPath:sub(e+1):gsub("classes\\", ""):gsub("\\", ".") .. class)
 	end
-	return require(class)
+	return require("classes." .. class)
 end
 
 class = require "class"
