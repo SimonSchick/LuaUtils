@@ -56,18 +56,22 @@ Promise = class("Promise", {
 		return Promise(function(resolveInternal, rejectInternal)
 			if self.resolved and resolve then
 				resolveInternal(resolve(unpack(self.resolveData)))
-			elseif self.rejected and reject then
-				rejectInternal(reject(unpack(self.resolveData)))
-			end
-			
-			tableinsert(self.thens, {
-				resolved = function()
-					resolveInternal(resolve())
-				end,
-				rejected = function()
-					rejectInternal(reject())
+			elseif self.rejected then
+				if reject then
+					rejectInternal(reject(unpack(self.resolveData)))
+				else
+					rejectInternal(unpack(self.resolveData))
 				end
-			})
+			else
+				tableinsert(self.thens, {
+					resolved = function()
+						resolveInternal(resolve(unpack(self.resolveData)))
+					end,
+					rejected = function()
+						rejectInternal(reject(unpack(self.resolveData)))
+					end
+				})
+			end
 		end)
 	end,
 	error = function(self, callback)
@@ -75,16 +79,17 @@ Promise = class("Promise", {
 			if self.resolved then
 				resolveInternal(unpack(self.resolveData))--original value ?
 			elseif self.rejected then
-				rejectInternal(callback(unpack(self.resolveData)))
+				resolveInternal(callback(unpack(self.resolveData)))
+			else
+				tableinsert(self.thens, {
+					resolved = function()
+						resolveInternal(unpack(self.resolveData))--original value ?
+					end,
+					rejected = function()
+						resolveInternal(callback(unpack(self.resolveData)))--original value ?
+					end
+				})
 			end
-			tableinsert(self.thens, {
-				resolved = function()
-					resolveInternal(unpack(self.resolveData))--original value ?
-				end,
-				rejected = function()
-					rejectInternal(callback(unpack(self.resolveData)))--original value ?
-				end
-			})
 		end)
 	end
 }, {
