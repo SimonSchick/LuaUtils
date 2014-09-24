@@ -9,15 +9,15 @@ function meta:right(len)
 end
 
 function meta:startsWith(str)
-	return self:sub(1, str:len()) == str
+	return self:sub(1, #str) == str
 end
 
 function meta:endsWith(str)
-	return self:sub(-str:len()) == str
+	return self:sub(-#str) == str
 end
 
 function string:emplace(at, str)
-	return self:sub(1, at - 1) .. str .. self:sub(at + str:len())
+	return self:sub(1, at - 1) .. str .. self:sub(at + #str)
 end
 
 function meta:insert(at, str)
@@ -53,7 +53,7 @@ end
 
 function meta:split(splitSize)
 	local ret = {}
-	for i = 1, self:len(), splitSize do
+	for i = 1, #self, splitSize do
 		table.insert(ret, self:sub(i, i + splitSize - 1))
 	end
 	return ret
@@ -65,7 +65,7 @@ end
 
 function meta:toChars()
 	local ret = {}
-	for i = 1, self:len() do
+	for i = 1, #self do
 		ret[i] = self:sub(i, i)
 	end
 	return ret
@@ -84,7 +84,7 @@ function meta:findLast(what, startIndex)
 	
 	local findStartIdx, findEndIdx = self:reverse():find(what:reverse(), startIndex or 1, true)
 	
-	local len = self:len()
+	local len = #self
 	
 	return len - findEndIdx + 1, len - findStartIdx + 1
 end

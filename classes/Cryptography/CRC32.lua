@@ -58,7 +58,7 @@ return class("CRC32", {
 	end,
 	update = function(self, str)
 		local crc = bxor(self.crc, 0xFFFFFFFF)
-		for i = 1, str:len() do
+		for i = 1, #str do
 			crc = bxor(
 				rshift(crc, 8),
 				crcTable[band(bxor(crc, sbyte(str, i)), 0xFF)+1]

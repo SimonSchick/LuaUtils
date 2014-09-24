@@ -48,7 +48,7 @@ return class("CRC16", {
 	update = function(self, str)
 		local crc = self.crc
 		local temp
-		for i = 1, str:len() do
+		for i = 1, #str do
 			temp = band(bxor(sbyte(str, i, i), crc), 0xFF)
 			crc = bxor(rshift(crc, 8), crcTable[temp+1])
 		end
