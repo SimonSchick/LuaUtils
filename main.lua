@@ -6,7 +6,7 @@ local function getCurrentScriptFolder(level)
 	return debug.getinfo(level + 1, "S").source:gsub("^@", ""):gsub("[%w_%.]-%.lua", "")
 end
 
-includePath = getCurrentScriptFolder(1)
+local includePath = getCurrentScriptFolder(1)
 
 local function injectRequireLoader()
 	package.path = package.path .. ";" .. includePath .. "?.lua"
