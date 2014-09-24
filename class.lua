@@ -4,6 +4,23 @@ local anonClassCounter = 0
 
 local ids = {}
 
+local function injectSuperUpValue(class)
+	local superMethods = class.super.methods
+	
+	for name, method in next, class.methods do
+		if type(method) == "function" then
+			for i = 1, debug.getinfo(method, "u").nups do
+				local name, value = debug.getupvalue(method, i)
+				if name == "super" then
+					debug.setupvalue(method, i, superMethods)
+					print("injected")
+					break
+				end
+			end
+		end
+	end
+end
+
 local function generateUID()
 	local id
 	repeat 
@@ -17,17 +34,17 @@ function instanceof(instance, class)
 	return instance[class.uid] ~= nil
 end
 
-local classMetaTable = {}
-classMetaTable.__index = classMetaTable
-classMetaTable.name = "INTERNAL CLASS META"
+local classmethods = {}
+classmethods.__index = classmethods
+classmethods.name = "INTERNAL CLASS META"
 
-function classMetaTable:getName()
+function classmethods:getName()
 	return self.name
 end
 
-function classMetaTable:getMethods()
+function classmethods:getMethods()
 	local ret = {}
-	for k, v in next, self.metaTable do
+	for k, v in next, self.methods do
 		if not (k == "__index" or k == "__tostring" or k == "getClass" or k:match("%x%x%x%x%x%x%x%x")) then
 			ret[k] = v
 		end
@@ -35,27 +52,27 @@ function classMetaTable:getMethods()
 	return ret
 end
 
-function classMetaTable:getSuper()
+function classmethods:getSuper()
 	return self.super
 end
 
-function classMetaTable:hasSuper()
+function classmethods:hasSuper()
 	return not not self.super
 end
 
-function classMetaTable:getUID()
+function classmethods:getUID()
 	return self.uid
 end
 
-function classMetaTable:__tostring()
+function classmethods:__tostring()
 	return ("Class: %s"):format(self:getName())
 end
 
-function classMetaTable:isAnonymous()
+function classmethods:isAnonymous()
 	return not not self.name:match("AnonymousClass%x+")
 end
 
-function classMetaTable:implements(otherClass, succ, ret)
+function classmethods:implements(otherClass, succ, ret)
 	if succ == nil then
 		succ = true
 	end
@@ -76,7 +93,7 @@ function classMetaTable:implements(otherClass, succ, ret)
 end
 
 
-local singletonClassMeta = setmetatable({}, classMetaTable)
+local singletonClassMeta = setmetatable({}, classmethods)
 singletonClassMeta.__index = singletonClassMeta
 singletonClassMeta.name = "INTERNAL SINGLETON CLASS META"
 
@@ -91,7 +108,7 @@ local function defaultToString(self)
 	return ("%s"):format(self:getClass():getName())
 end
 
-function abstractClass(name, metaTable, statics, superClass)
+function abstractClass(name, methods, statics, superClass)
 	if not name then
 		name = string.format("AnonymousClass%08x", anonClassCounter)
 		anonClassCounter = anonClassCounter + 1
@@ -99,26 +116,26 @@ function abstractClass(name, metaTable, statics, superClass)
 	
 	local uid = generateUID()
 	
-	if metaTable.new then
+	if methods.new then
 		error("Abstract class cannot have constructor")
 	end
 	
-	metaTable.__index = metaTable.__index or metaTable
-	metaTable[uid] = true
+	methods.__index = methods.__index or methods
+	methods[uid] = true
 	
 
-	local internalClassMetaTable = {
-		__tostring = classMetaTable.__tostring
+	local internalClassmethods = {
+		__tostring = classmethods.__tostring
 	}
 	
-	internalClassMetaTable.__index = internalClassMetaTable
+	internalClassmethods.__index = internalClassmethods
 	
 	local classTable = setmetatable({
-		metaTable = metaTable,
+		methods = methods,
 		uid = uid,
 		name = name,
 		new = constructor
-	}, setmetatable(internalClassMetaTable, classMetaTable))
+	}, setmetatable(internalClassmethods, classmethods))
 	
 	if statics then
 		for k, v in next, statics do
@@ -128,13 +145,15 @@ function abstractClass(name, metaTable, statics, superClass)
 	
 	if superClass then
 		classTable.super = superClass
-		setmetatable(metaTable, superClass.metaTable)
+		setmetatable(methods, superClass.methods)
+		classTable.super = superClass
+		injectSuperUpValue(classTable)
 	end
 	
 	return classTable
 end
 	
-function class(name, metaTable, statics, superClass, isSingleton, isAbstract)
+function class(name, methods, statics, superClass, isSingleton, isAbstract)
 	if not name then
 		name = string.format("AnonymousClass%08x", anonClassCounter)
 		anonClassCounter = anonClassCounter + 1
@@ -142,32 +161,32 @@ function class(name, metaTable, statics, superClass, isSingleton, isAbstract)
 	
 	local uid = generateUID()
 	
-	local constructor = metaTable.new
+	local constructor = methods.new
  
-	metaTable.__index = metaTable.__index or metaTable
-	metaTable.__tostring = metaTable.__tostring or defaultToString
-	metaTable[uid] = true
+	methods.__index = methods.__index or methods
+	methods.__tostring = methods.__tostring or defaultToString
+	methods[uid] = true
 	
 
-	local internalClassMetaTable = {
+	local internalClassmethods = {
 		__call = function(classTbl, ...)
-			local new = setmetatable({}, metaTable)
+			local new = setmetatable({}, methods)
 			if constructor then
 				constructor(new, ...)
 			end
 			return new
 		end,
-		__tostring = classMetaTable.__tostring
+		__tostring = classmethods.__tostring
 	}
 	
-	internalClassMetaTable.__index = internalClassMetaTable
+	internalClassmethods.__index = internalClassmethods
 	
 	local classTable = setmetatable({
-		metaTable = metaTable,
+		methods = methods,
 		uid = uid,
 		name = name,
 		new = constructor
-	}, setmetatable(internalClassMetaTable, isSingleton and singletonClassMeta or classMetaTable))
+	}, setmetatable(internalClassmethods, isSingleton and singletonClassMeta or classmethods))
 	
 	if statics then
 		for k, v in next, statics do
@@ -186,11 +205,13 @@ function class(name, metaTable, statics, superClass, isSingleton, isAbstract)
 			end
 			error("Missing method")
 		end
-		setmetatable(metaTable, superClass.metaTable)
+		setmetatable(methods, superClass.methods)
+		classTable.super = superClass
+		injectSuperUpValue(classTable)
 	end
 	
-	metaTable.getClass = function(self)
-		return classTable
+	methods.getClass = function()
+		return superClass
 	end
 	
 	return classTable
