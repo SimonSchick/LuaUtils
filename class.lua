@@ -78,7 +78,7 @@ function classmethods:implements(otherClass, succ, ret)
 	local methods = self:getMethods()
 	ret = ret or {}
 	for methodName, value in next, otherClass:getMethods() do
-		if (methodName:sub(1, 2) ~= "__") and methodName:sub(1, 1):match("%a") and type(methods[methodName]) ~= "function" then
+		if (methodName:sub(1, 2) ~= "__") and methodName:sub(1, 1):match("%a") and type(methods[methodName]) ~= "function" and value == true then
 			local otherName = otherClass:getName()
 			ret[otherName] = ret[otherName] or {}
 			table.insert(ret[otherName], methodName)
