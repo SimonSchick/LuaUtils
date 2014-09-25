@@ -106,12 +106,13 @@ function meta:capitalize()
 end
 
 function meta:chars(startPos, endPos)
-	startPos = startPos and startPos - 1 or 0
+	startPos = startPos or 1
 	endPos = endPos or #self
 	
-	local i = startPos
+	local i = startPos - 1
 	
 	return function()
+		i = i + 1
 		if i > endPos then
 			return
 		end
