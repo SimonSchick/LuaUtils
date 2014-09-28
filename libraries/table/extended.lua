@@ -7,7 +7,7 @@ end
 local function test(tbl, func)
 	for k, v in next, tbl do
 		if not func(k, v) then
-			return false
+			return false, k, v
 		end
 	end
 	return true
@@ -189,7 +189,7 @@ end
 local function any(tbl, func)
 	for k, v in next, tbl do
 		if func(k, v) then
-			return true
+			return true, k, v
 		end
 	end
 	return false
