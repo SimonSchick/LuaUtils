@@ -36,13 +36,10 @@ end
 
 local function isSequential(tbl)
 	local numericKeys = 0
+	local tblLen = #tbl
 	for k, v in next, tbl do
-		if type(k) == "number" then
-			numericKeys = numericKeys + 1
-		end
-	end
-	for i = 1, numericKeys do 
-		if not tbl[i] then
+		numericKeys = numericKeys + 1
+		if numericKeys > tblLen then
 			return false
 		end
 	end
