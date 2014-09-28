@@ -12,6 +12,8 @@ local function injectRequireLoader()
 	package.path = package.path .. ";" .. includePath .. "?.lua"
 end
 
+injectRequireLoader()
+
 local function canLoadFile(path)
 	return not not(loadfile(path))
 end
