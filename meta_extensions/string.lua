@@ -116,7 +116,22 @@ function meta:chars(startPos, endPos)
 		if i > endPos then
 			return
 		end
-		return self:sub(i, i)
+		return self:sub(i, i), i
+	end
+end
+
+function meta:bytes(startPos, endPos)
+	startPos = startPos or 1
+	endPos = endPos or #self
+	
+	local i = startPos - 1
+	
+	return function()
+		i = i + 1
+		if i > endPos then
+			return
+		end
+		return self:sub(i, i):byte(), i
 	end
 end
 
@@ -126,4 +141,15 @@ end
 
 function meta:isEmpty()
 	return self == ""
+end
+
+local bxor = bit.bxor
+
+function meta:xor(other)
+	local ret = {}
+	local otherLen = #other
+	for byte, idx in self:bytes() do
+		ret[idx] = string.char(bxor(byte, other:byte(idx > otherLen and idx % otherLen + 1 or idx)))
+	end
+	return table.concat(ret)
 end
