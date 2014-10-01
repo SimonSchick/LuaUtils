@@ -56,7 +56,7 @@ function classmethods:getSuper()
 end
 
 function classmethods:hasSuper()
-	return not not self.super
+	return self.super ~= nil
 end
 
 function classmethods:getUID()
@@ -64,7 +64,7 @@ function classmethods:getUID()
 end
 
 function classmethods:__tostring()
-	return ("Class: %s"):format(self:getName())
+	return ("Class: %s"):format(self.name)
 end
 
 function classmethods:isAnonymous()
