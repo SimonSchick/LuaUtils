@@ -4,15 +4,6 @@ local function forEach(tbl, func)
 	end
 end
 
-local function test(tbl, func)
-	for k, v in next, tbl do
-		if not func(k, v) then
-			return false, k, v
-		end
-	end
-	return true
-end
-
 local function fill(tbl, val, startIndex, endIndex)
 	if startIndex then
 	
@@ -84,19 +75,11 @@ local function find(tbl, func)
 end
 
 local function indexOf(tbl, val)
-	if isSequential(tbl) then
-		for i = 1, #tbl do
-			if tbl[i] == val then
-				return i
-			end
-		end
-		return
-	end
-	for k, v in next, tbl do
-		if val == v then
+	return (find(tbl, function(k, v)
+		if v == val then
 			return k
 		end
-	end
+	end))
 end
 
 local function keys(tbl)
@@ -184,12 +167,23 @@ local function slice(tbl, startIndex, endIndex)
 end
 
 local function any(tbl, func)
-	for k, v in next, tbl do
-		if func(k, v) then
-			return true, k, v
-		end
+	local k, v = find(tbl, func)
+	if k then
+		return true, k, v
 	end
 	return false
+end
+
+local function test(tbl, func)
+	local k, v = find(tbl, function(k, v)
+		if not func(k, v) then
+			return k, v
+		end
+	end)
+	if k then
+		return false, k, v
+	end
+	return true
 end
 
 local function unshift(tbl)
