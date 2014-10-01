@@ -7,12 +7,9 @@ return class("XOR", {
 		self.key = key
 	end,
 	encrypt = function(self, data)
-		return b:get()
+		return data:xor(self.key)
 	end,
 	decrypt = function(self, data)
-		self.rotation = -self.rotation
-		local ret = self:encrypt(data)
-		self.rotation = -self.rotation
-		return ret
+		return self:encrypt(self, data)
 	end
 }, nil, Encryption)
