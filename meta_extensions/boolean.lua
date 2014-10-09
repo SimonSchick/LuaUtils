@@ -9,7 +9,7 @@ meta.__lt = implication
 meta.__le = implication
 
 meta.__pow = function(lhs, rhs)
-	return (lhs and not rhs) or (not lhs and rhs)
+	return lhs ~= rhs
 end
 
 meta.__unm = function(subject) return not subject end
