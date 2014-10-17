@@ -257,6 +257,71 @@ local function weakKeyValueTable()
 	return setmetatable({}, weakKeyValueMT)
 end
 
+local function swap(tbl)
+	local ret = {}
+	for k, v in next, tbl do
+		ret[v] = k
+	end
+	return ret
+end
+
+local function sorted(tbl, descending, sortByValue, secondarySort)
+	local data = sortByValue and values(tbl) or keys(tbl)
+	local lookupMap = sortByValue and swap(tbl) or tbl
+	if secondarySort then
+		table.sort(data, descending and function(a, b) return lookupMap[a] > lookupMap[b] end or function(a, b) return lookupMap[a] < lookupMap[b] end)
+	end
+	table.sort(data, descending and function(a, b) return a > b end or nil)
+
+	local i = 1
+	if sortByValue then
+		return function()
+			local v = data[i]
+			i = i + 1
+			return lookupMap[v], v
+		end
+	else
+		return function()
+			local k = data[i]
+			i = i + 1
+			return k, lookupMap[k]
+		end
+	end
+end
+
+local function compare(tbl1, tbl2)
+	for k, v in next, tbl1 do
+		if v ~= tbl2[k] then
+			return false
+		end
+	end
+	for k, v in next, tbl2 do
+		if v ~= tbl1[k] then
+			return false
+		end
+	end
+	return true
+end
+
+local function diff(tbl1, tbl2)
+	local added, missing, changed = {}, {}, {}
+	for k, v in next, tbl1 do
+		if not tbl2[k] then
+			missing[k] = v
+		end
+		if v ~= tbl2[k] then
+			changed[k] = v
+		end
+	end
+	for k, v in next, tbl2 do
+		if not tbl1[k] then
+			added[k] = v
+		end
+	end
+	return added, missing, changed
+end
+	
+
 return {
 	forEach = forEach,
 	test = test,
@@ -282,5 +347,9 @@ return {
 	isEmpty = isEmpty,
 	weakKeyTable = weakKeyTable,
 	weakValueTable = weakValueTable,
-	weakKeyValueTable = weakKeyValueTable
+	weakKeyValueTable = weakKeyValueTable,
+	swap = swap,
+	sorted = sorted,
+	compare = compare,
+	diff = diff
 }
