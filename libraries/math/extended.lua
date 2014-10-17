@@ -83,21 +83,20 @@ local function ld(val)
 	return mlog(val) / mlog(2)
 end
 
-local function faculty(n)
+local function factorial(n)
 	local res = 1
 	for i = 2, n do
 		res = res * i
 	end
 	return res
 end
-local faculty = faculty
 
 local function binomial(n, k)
-	return faculty(n) / (faculty(k) * faculty(n - k))
+	return factorial(n) / (factorial(k) * factorial(n - k))
 end
 
 local function binomial2(n, k)
-	return (n ^ k) / faculty(k)
+	return (n ^ k) / factorial(k)
 end
 
 local function binomial3(n, k)
@@ -196,14 +195,6 @@ local function medianB(a, s, e)
 	return new[mceil(#new / 2)]
 end
 
-local function tableOperation(tbl, func, ...)
-	local ret = {}
-	for i = 1, #tbl do
-		ret[i] = func(tbl[i], ...)
-	end
-	return ret
-end
-
 local function sign(a)
 	if a > 0 then
 		return 1
@@ -224,6 +215,18 @@ local function isNaN(val)
 	return val ~= val
 end
 
+local function intervalIntersect(a1, a2, b1, b2)
+	return (a1 >= b1 and a1 <= b2) or (a2 >= b1 and a2 <= b2)
+end
+
+local function inRange(val, min, max)
+	return val >= min and val <= max
+end
+
+local function roundToMultipleOf(val, multiple)
+    return multiple * round(val / multiple)
+end
+
 return {
 	euler = euler,
 	isIntegral = isIntegral,
@@ -234,7 +237,7 @@ return {
 	product = product,
 	logb = logb,
 	ld = ld,
-	faculty = faculty,
+	factorial = factorial,
 	binomial = binomial,
 	binomial2 = binomial2,
 	binomial3 = binomial3,
@@ -251,5 +254,8 @@ return {
 	tableOperation = tableOperation,
 	sign = sign,
 	truncate = truncate,
-	isNaN = isNaN
+	isNaN = isNaN,
+	intervalIntersect = intervalIntersect,
+	inRange = inRange,
+	roundToMultipleOf = roundToMultipleOf
 }
