@@ -227,6 +227,18 @@ local function roundToMultipleOf(val, multiple)
     return multiple * round(val / multiple)
 end
 
+local function isPrime(number)
+    if number <= 1 then
+		return false
+	end
+    for i = 2, math.sqrt(number) do
+        if number % i == 0 then
+			return false
+		end
+    end
+    return true
+end
+
 return {
 	euler = euler,
 	isIntegral = isIntegral,
@@ -257,5 +269,6 @@ return {
 	isNaN = isNaN,
 	intervalIntersect = intervalIntersect,
 	inRange = inRange,
-	roundToMultipleOf = roundToMultipleOf
+	roundToMultipleOf = roundToMultipleOf,
+	isPrime = isPrime
 }
