@@ -153,3 +153,37 @@ function meta:xor(other)
 	end
 	return table.concat(ret)
 end
+
+function meta:findSequence(callback, startPos, endPos)
+	local length = 0
+	local sequenceStart = 0
+	local sequence = {}
+	for char, idx in self:chars(startPos, endPos) do
+		local ok, finish = callback(char, idx, length, sequence)
+		if finish then
+			return idx - length + 1, length, table.concat(sequence)
+		end
+		if ok then
+			length = length + 1
+			table.insert(sequence, char)
+		else
+			length = 0
+			sequence = {}
+		end
+	end
+	return nil, nil, {}
+end
+
+function meta:count(what, usePattern)
+	local count = 0
+	local startPos, endPos = 0, 0
+	while true do
+		startPos, endPos = self:find(what, startPos, not usePattern)
+		if not startPos then
+			return count
+		else
+			count = count + 1
+		end
+	end
+	return count
+end
