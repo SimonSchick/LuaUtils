@@ -8,18 +8,18 @@ local msqrt = math.sqrt
 local tsort = table.sort
 local tinsert = table.insert
 
-euler = 2.718281828459045
+local euler = math.exp(1)
 
 local function isIntegral(v)
-	return v%1 == 0
+	return v % 1 == 0
 end
 
 local function getFraction(v)
-	return v%1
+	return v % 1
 end
 
 local function root(v, base)
-	return v^ - base
+	return v ^ -base
 end
 
 local function eval(f, start, stop, step)
@@ -175,7 +175,7 @@ local function ease(progress, easeIn, easeOut)
 		return (progressCalc * (2.0 * progress - easeIn))
 	else 
 		progress = 1 - progress
-		return (1 - (progressCalc / easeOut) * progress ^ 2)
+		return 1 - (progressCalc / easeOut) * progress ^ 2
 	end
 end
 
@@ -206,9 +206,9 @@ local function sign(a)
 end
 
 local function truncate(val, idp)
-	local mult = 10^(idp or 0)
+	local mult = 10 ^ (idp or 0)
 	
-	return (val < 0 and math.ceil or math.floor)(val * mult) / mult
+	return (val < 0 and mceil or mfloor)(val * mult) / mult
 end
 
 local function isNaN(val)
@@ -231,7 +231,7 @@ local function isPrime(number)
     if number <= 1 then
 		return false
 	end
-    for i = 2, math.sqrt(number) do
+    for i = 2, msqrt(number) do
         if number % i == 0 then
 			return false
 		end
