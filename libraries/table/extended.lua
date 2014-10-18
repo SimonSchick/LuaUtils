@@ -359,7 +359,7 @@ end
 local function min(tbl, func)
 	local minV = math.huge
 	local minK = nil
-	for k, v in next, do
+	for k, v in next, tbl do
 		if (func and func(minV, v)) or v < minV then
 			minV = v
 			minK = k
@@ -371,7 +371,7 @@ end
 local function max(tbl, func)
 	local maxV = math.huge
 	local maxK = nil
-	for k, v in next, do
+	for k, v in next, tbl do
 		if (func and func(v, maxV)) or v > maxV then
 			maxV = v
 			maxK = k

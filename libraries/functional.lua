@@ -19,7 +19,17 @@ local function nestList(func, n, list)
 	return list
 end
 
+local function combineFlat(tbl)
+	return function(...)
+		for i = 1, #tbl do
+			tbl[i](...)
+		end
+	end
+end
+
 return {
-	nest = nest
+	nest = nest,
+	nestList = nestList,
+	combineFlat = combineFlat
 }
 
