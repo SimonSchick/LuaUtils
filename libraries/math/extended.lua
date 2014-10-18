@@ -239,6 +239,13 @@ local function isPrime(number)
     return true
 end
 
+local function randomReal(min, max)
+	if min and not max then
+		min, max = 0, min
+	end
+	return min + math.random() * (max - min)
+end
+
 return {
 	euler = euler,
 	isIntegral = isIntegral,
