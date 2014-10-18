@@ -1,3 +1,5 @@
+local tinsert = table.insert
+
 local function nest(func, n)
 	if n == 1 then
 		return func
@@ -9,7 +11,7 @@ end
 
 local function nestList(func, n, list)
 	list = list or {}
-	table.insert(list, func)
+	tinsert(list, func)
 	if n == 1 then
 		return func
 	end
