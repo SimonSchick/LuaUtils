@@ -37,6 +37,10 @@ local function isSequential(tbl)
 	return true
 end
 
+local function assertSequential(tbl)
+	assert(isSequential(tbl), "Table is not sequential")
+end	
+
 local function filter(tbl, func--[[
 , createNew]])
 	--local target = createNew and {} or tbl
@@ -75,11 +79,11 @@ local function find(tbl, func)
 end
 
 local function indexOf(tbl, val)
-	return (find(tbl, function(k, v)
+	return find(tbl, function(k, v)
 		if v == val then
 			return k
 		end
-	end))
+	end)
 end
 
 local function keys(tbl)
@@ -144,9 +148,7 @@ local function shift(tbl)
 end
 
 local function slice(tbl, startIndex, endIndex)
-	if not isSequential(tbl) then
-		error("Table is not sequential")
-	end
+	assertSequential(tbl)
 	local len = #tbl
 	
 	startIndex = startIndex or 1
@@ -210,10 +212,14 @@ local function removeKeysByValue(tbl, key)
 	end
 end
 
-local function count(tbl)
+local function count(tbl, func)
 	local c = 0
 	for k, v in next, tbl do
-		c = c + 1
+		if func and func(k, v) then
+			c = c + 1
+		else
+			c = c + 1
+		end
 	end
 	return c
 end
@@ -320,7 +326,68 @@ local function diff(tbl1, tbl2)
 	end
 	return added, missing, changed
 end
-	
+
+local function traverse(tbl, func, done, parent)
+	done = done or {}
+	if done[tbl] then
+		return
+	end
+	done[tbl] = true
+	for k, v in next, tbl do
+		if type(v) == "table" then
+			traverse(v, done, func, tbl)
+		else
+			func(k, v, tbl, parent)
+		end
+	end
+end
+
+local function flatten(tbl, done, result)
+	local result = {}
+	traverse(tbl, function(k, v)
+		result[k] = v
+	end)
+end
+
+local function flattenValues(tbl, done, result)
+	local result = {}
+	traverse(tbl, function(k, v)
+		table.insert(result, v)
+	end)
+end
+
+local function min(tbl, func)
+	local minV = math.huge
+	local minK = nil
+	for k, v in next, do
+		if (func and func(minV, v)) or v < minV then
+			minV = v
+			minK = k
+		end
+	end
+	return minV, minK
+end
+
+local function max(tbl, func)
+	local maxV = math.huge
+	local maxK = nil
+	for k, v in next, do
+		if (func and func(v, maxV)) or v > maxV then
+			maxV = v
+			maxK = k
+		end
+	end
+	return minV, maxK
+end
+
+local function shuffle(tbl)
+	local size = #tbl
+	for i = 1, size do
+		local j, k = random(size), random(size)
+		tbl[j], tbl[k] = tbl[k], tbl[j]
+	end
+	return tbl
+end
 
 return {
 	forEach = forEach,
@@ -351,5 +418,11 @@ return {
 	swap = swap,
 	sorted = sorted,
 	compare = compare,
-	diff = diff
+	diff = diff,
+	traverse = traverse,
+	flatten = flatten,
+	flattenValues = flattenValues,
+	min = min,
+	max = max,
+	shuffle = shuffle
 }
